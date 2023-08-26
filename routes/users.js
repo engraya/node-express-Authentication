@@ -6,14 +6,15 @@ const flash = require('connect-flash');
 // User Model
 const User = require('../models/User');
 
+const { forwardAuthenticated } = require('../config/authConfig');
 
 // Registration Page
-router.get('/register', (request, response) => {
+router.get('/register', forwardAuthenticated, (request, response) => {
     response.render('register')
 })
 
 // Login Page
-router.get('/login', (request, response) => {
+router.get('/login', forwardAuthenticated, (request, response) => {
     response.render('login')
 })
 
