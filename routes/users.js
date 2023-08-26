@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcryptjs')
 const passport = require('passport');
-
+const flash = require('connect-flash');
 // User Model
 const User = require('../models/User');
 
@@ -73,7 +73,7 @@ router.post('/register', (request, response) =>{
                             // Save Insatnce of the User to Database
                             newUser.save()
                                 .then(user => {
-                                    request.flash('success_messsage', 'Congratulations, You are now Registered as User')
+                                    request.flash('success_msg', 'Congratulations, You are now Registered as User')
                                     response.redirect('login')
                                 })
                                 .catch(error => console.log(error));
@@ -96,10 +96,12 @@ router.post('/login', (req, res, next) => {
   });
   
   // Logout
-  router.get('/logout', (req, res) => {
-    req.logout();
-    req.flash('success_msg', 'You are logged out Successfully');
-    res.redirect('/users/login');
+  router.get('/logout', (request, response, next) => {
+    request.logout(function (error) {
+        if (error) { return next(error)}
+    });
+    request.flash('success_msg', 'You are logged out Successfully');
+    response.redirect('/users/login');
   });
   
 
