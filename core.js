@@ -11,12 +11,42 @@ const path = require('path');
 const bodyParser = require('body-parser');
 
 
+// Passport Config
+require('./config/passport')(passport);
+
 // EJS
 app.use(expressLayouts);
 app.set('view engine', 'ejs');
 
 app.use(express.static(path.join(__dirname,"public")));
 app.use(bodyParser.urlencoded({ extended : false }));
+
+
+// Express session
+app.use(
+    session({
+      secret: 'secret',
+      resave: true,
+      saveUninitialized: true
+    })
+  );
+  
+  // Passport middleware
+  app.use(passport.initialize());
+  app.use(passport.session());
+  
+  // Connect flash
+  app.use(flash());
+
+
+// Global variables
+app.use(function(req, res, next) {
+    res.locals.success_msg = req.flash('success_msg');
+    res.locals.error_msg = req.flash('error_msg');
+    res.locals.error = req.flash('error');
+    next();
+  });
+
 
 //Routes
 app.use('/', coreRoute)
@@ -28,18 +58,6 @@ const dbURL = 'mongodb://localhost:27017/authenticationDB'
 mongoose.connect(dbURL, { family : 4}, { useNewUrlParser: true, useUnifiedTopology: true  } )
     .then(() => console.log('Successfully Connected to Database...'))
     .catch((err) => console.log(err));
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
